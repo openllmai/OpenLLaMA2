@@ -190,7 +190,7 @@ if __name__ == "__main__":
         "--colocate_all_models",
         action="store_true",
         default=False,
-        help="whether to colocate critic and reward model, if true, they will share same gpus.",
+        help="whether to colocate all models (including vLLM engines), if true, they will share same gpus.",
     )
 
     # optional vLLM for text generation
