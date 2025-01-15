@@ -56,10 +56,7 @@ def train(args):
             args.actor_num_nodes == args.ref_num_nodes and args.actor_num_gpus_per_node == args.ref_num_gpus_per_node
         ), f"num_nodes and num_gpus_per_node must be the same when colocate actor and ref model."
 
-        bundles = [
-            {"GPU": args.actor_num_gpus_per_node, "CPU": args.actor_num_gpus_per_node}
-            for _ in range(args.actor_num_nodes)
-        ]
+        bundles = [{"GPU": 1, "CPU": 1} for _ in range(args.actor_num_nodes * args.actor_num_gpus_per_node)]
         pg = placement_group(bundles, strategy="STRICT_SPREAD")
         ray.get(pg.ready())
 
@@ -86,10 +83,7 @@ def train(args):
             and args.critic_num_gpus_per_node == args.reward_num_gpus_per_node
         ), f"num_nodes and num_gpus_per_node must be the same when colocate critic and reward model."
 
-        bundles = [
-            {"GPU": args.critic_num_gpus_per_node, "CPU": args.critic_num_gpus_per_node}
-            for _ in range(args.critic_num_nodes)
-        ]
+        bundles = [{"GPU": 1, "CPU": 1} for _ in range(args.critic_num_nodes * args.critic_num_gpus_per_node)]
         pg = placement_group(bundles, strategy="STRICT_SPREAD")
         ray.get(pg.ready())
 

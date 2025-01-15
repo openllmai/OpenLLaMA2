@@ -128,6 +128,7 @@ def create_vllm_engines(
                 enable_prefix_caching=enable_prefix_caching,
                 enforce_eager=enforce_eager,
                 max_model_len=max_model_len,
+                gpu_memory_utilization=0.3,
             )
         )
 
