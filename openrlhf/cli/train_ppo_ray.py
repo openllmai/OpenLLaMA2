@@ -63,21 +63,12 @@ def train(args):
         pg = placement_group(bundles, strategy="STRICT_SPREAD")
         ray.get(pg.ready())
 
-    # NOTE(wuxibin): Why don't we allocate 0.5 gpu for each actor when colocate models?
-    # Say we have 1 node with 4 GPUs, and num_gpus_per_node for each model is 4.
-    # If we allocate 0.5 gpu for both actor and ref model, then gpu allocation is
-    #   |actor|actor|actor|actor|  ref | ref  | ref  | ref |
-    #   |GPU0 |GPU0 |GPU1 |GPU1 | GPU2 | GPU2 | GPU3 | GPU3 |
-    #
-    # So 0.75/0.25 gpu is a tricky to let Ray spread all models evenly on all gpus.
-    #   |actor| ref  |actor| ref  |actor| ref  |actor|ref  |
-    #   |GPU0 | GPU0 |GPU1 | GPU1 |GPU2 | GPU2 |GPU3 | GPU3 |
     actor_model = PPORayActorGroup(
         args.actor_num_nodes,
         args.actor_num_gpus_per_node,
         ActorModelRayActor,
         pg=pg,
-        num_gpus_per_actor=0.75 if pg else 1,
+        num_gpus_per_actor=0.25 if args.colocate_actor_ref else 1,
     )
 
     ref_model = PPORayActorGroup(
@@ -85,7 +76,7 @@ def train(args):
         args.ref_num_gpus_per_node,
         ReferenceModelRayActor,
         pg=pg,
-        num_gpus_per_actor=0.25 if pg else 1,
+        num_gpus_per_actor=0.25 if args.colocate_actor_ref else 1,
     )
 
     # if colocated, create placement group for critic and reward model explicitly.
