@@ -89,6 +89,7 @@ def create_vllm_engines(
     enable_prefix_caching: bool,
     enforce_eager: bool,
     max_model_len: int,
+    pg=None,
 ):
     vllm_engines = []
     # RAY_EXPERIMENTAL_NOSET_*_VISIBLE_DEVICES will always be set in current context,
@@ -98,10 +99,12 @@ def create_vllm_engines(
         # When tensor_parallel_size=1 and RAY_EXPERIMENTAL_NOSET_*_VISIBLE_DEVICES is not set
         # (vLLM mp backend will work smoothly only when *_VISIBLE_DEVICES is modified),
         # vLLM init model in LLMEngine directly, assign 1 GPU for it.
-        num_gpus = int(tensor_parallel_size == 1 and not noset_visible_devices)
-        scheduling_strategy = None
+        if pg:
+            num_gpus = 0.2
+        else:
+            num_gpus = int(tensor_parallel_size == 1 and not noset_visible_devices)
 
-        if tensor_parallel_size > 1 or noset_visible_devices:
+        if not pg and (tensor_parallel_size > 1 or noset_visible_devices):
             bundles = [{"GPU": 1, "CPU": 1}] * tensor_parallel_size
             pg = placement_group(bundles)
             ray.get(pg.ready())
@@ -109,10 +112,12 @@ def create_vllm_engines(
             scheduling_strategy = PlacementGroupSchedulingStrategy(
                 placement_group=pg, placement_group_capture_child_tasks=True, placement_group_bundle_index=0
             )
+        else:
+            scheduling_strategy = None
 
         vllm_engines.append(
             LLMRayActor.options(
-                num_cpus=1,
+                num_cpus=num_gpus,
                 num_gpus=num_gpus,
                 scheduling_strategy=scheduling_strategy,
             ).remote(
@@ -125,6 +130,7 @@ def create_vllm_engines(
                 enable_prefix_caching=enable_prefix_caching,
                 enforce_eager=enforce_eager,
                 max_model_len=max_model_len,
+                gpu_memory_utilization=0.3,
             )
         )
 
