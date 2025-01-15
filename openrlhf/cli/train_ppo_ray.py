@@ -57,7 +57,7 @@ def train(args):
         ), f"num_nodes and num_gpus_per_node must be the same when colocate actor and ref model."
 
         bundles = [{"GPU": 1, "CPU": 1} for _ in range(args.actor_num_nodes * args.actor_num_gpus_per_node)]
-        pg = placement_group(bundles, strategy="STRICT_SPREAD")
+        pg = placement_group(bundles, strategy="PACK")
         ray.get(pg.ready())
 
     actor_model = PPORayActorGroup(
@@ -84,7 +84,7 @@ def train(args):
         ), f"num_nodes and num_gpus_per_node must be the same when colocate critic and reward model."
 
         bundles = [{"GPU": 1, "CPU": 1} for _ in range(args.critic_num_nodes * args.critic_num_gpus_per_node)]
-        pg = placement_group(bundles, strategy="STRICT_SPREAD")
+        pg = placement_group(bundles, strategy="PACK")
         ray.get(pg.ready())
 
     if args.critic_pretrain:
