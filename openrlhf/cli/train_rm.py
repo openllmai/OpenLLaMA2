@@ -249,6 +249,7 @@ if __name__ == "__main__":
         default="exp_%s" % datetime.now().strftime("%m%dT%H:%M"),
     )
     parser.add_argument("--swanlab_mode", type=str, default=None)
+    parser.add_argument("--swanlab_logdir", type=str, default=None)
 
     # ModelScope parameters
     parser.add_argument("--use_ms", action="store_true", default=False)

@@ -192,6 +192,7 @@ class PPOTrainer(ABC):
                 experiment_name=strategy.args.swanlab_run_name,
                 mode=strategy.args.swanlab_mode,
                 config=strategy.args.__dict__,
+                logdir=strategy.args.swanlab_logdir,
             )
 
         # Initialize TensorBoard writer if wandb & swanlab is not available

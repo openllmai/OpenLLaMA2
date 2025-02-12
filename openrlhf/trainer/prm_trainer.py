@@ -103,6 +103,7 @@ class ProcessRewardModelTrainer(ABC):
                 experiment_name=strategy.args.swanlab_run_name,
                 mode=strategy.args.swanlab_mode,
                 config=strategy.args.__dict__,
+                logdir=strategy.args.swanlab_logdir,
             )
 
     def fit(self, args, consumed_samples=0, num_update_steps_per_epoch=None):
