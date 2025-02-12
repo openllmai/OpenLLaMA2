@@ -92,8 +92,11 @@ class ProcessRewardModelTrainer(ABC):
         self._swanlab = None
         if self.strategy.args.use_swanlab and self._wandb is None and self.strategy.is_rank_0():
             import swanlab
+            import os
 
             self._swanlab = swanlab
+            if not os.environ.get("SWANLAB_API_KEY"):
+                swanlab.login(api_key=strategy.args.use_swanlab)     
             swanlab.init(
                 project=strategy.args.swanlab_project,
                 workspace=strategy.args.swanlab_workspace,

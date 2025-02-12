@@ -98,6 +98,8 @@ class SFTTrainer(ABC):
             import swanlab
 
             self._swanlab = swanlab
+            if not os.environ.get("SWANLAB_API_KEY"):
+                swanlab.login(api_key=strategy.args.use_swanlab)     
             swanlab.init(
                 project=strategy.args.swanlab_project,
                 workspace=strategy.args.swanlab_workspace,
