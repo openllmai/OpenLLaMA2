@@ -7,6 +7,8 @@ from typing import List, Optional, Tuple, Union
 import ray
 import torch
 import torch.nn as nn
+import torch.distributed as dist
+import torch.nn.functional as F
 from tqdm import tqdm
 
 from openrlhf.models.actor import Actor
@@ -191,7 +193,15 @@ class NaiveExperienceMaker(ABC):
         """
         args = self.strategy.args
         # generate responses
-        samples_list = self.generate_samples(all_prompts, **generate_kwargs)
+        if self.strategy.ring_attn_group is not None:
+            if self.strategy.ring_attn_rank == 0:
+                samples_list = self.generate_samples(all_prompts, **generate_kwargs)
+                dist.broadcast_object_list(samples_list, src=dist.get_rank(), group=self.strategy.ring_attn_group)
+            else:
+                samples_list = [None] * (args.rollout_batch_size // args.micro_rollout_batch_size // args.vllm_num_engines)
+                dist.broadcast_object_list(samples_list, src=self.strategy.ring_attn_ranks[0], group=self.strategy.ring_attn_group)
+        else:
+            samples_list = self.generate_samples(all_prompts, **generate_kwargs)
         torch.distributed.barrier()
 
         experiences = []
@@ -559,7 +569,11 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
 
         # init log probs
         base_action_log_probs_ref = self.initial_model.forward.remote(
-            sequences_cpu, num_actions, attention_mask_cpu, packed_seq_lens=packed_seq_lens
+            sequences_cpu, 
+            num_actions, 
+            attention_mask_cpu, 
+            logps_allgather=True,
+            packed_seq_lens=packed_seq_lens
         )
 
         if args.colocate_all_models:
@@ -614,7 +628,14 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
             ray.get([self.reward_model[0].empty_cache.remote()])
 
         # log probs
-        action_log_probs = self.actor(sequences, num_actions, attention_mask, packed_seq_lens=packed_seq_lens)
+        action_log_probs = self.actor(
+            sequences, 
+            num_actions, 
+            attention_mask, 
+            ring_attn_group=self.strategy.ring_attn_group,
+            logps_allgather=True,
+            packed_seq_lens=packed_seq_lens
+        )
         actor_value_rm_time = time.time() - start
 
         # wait initial/critic/reward model done
@@ -801,6 +822,13 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
                     # current_action_mask = [0] * (input_len - 1) + [1] * output_len + [0]
                     # num_actions.append(max(1, sum(current_action_mask)))
                     num_actions.append(max(1, output_len))
+                    if self.strategy.ring_attn_group is not None:
+                        pad_len = (self.strategy.ring_attn_size - (input_len + output_len) % self.strategy.ring_attn_size) % self.strategy.ring_attn_size
+                        sequences += [pad_token_id] * pad_len
+                        output_len += pad_len
+                        packed_seq_lens[-1] += pad_len
+                        attention_mask += [i + 1] * pad_len
+                        num_actions[-1] += pad_len
 
                 sequences = torch.tensor(sequences, device="cuda").unsqueeze(0)
                 attention_mask = torch.tensor(attention_mask, device="cuda").unsqueeze(0)
