@@ -102,9 +102,10 @@ class ProcessRewardModelTrainer(ABC):
                 workspace=strategy.args.swanlab_workspace,
                 experiment_name=strategy.args.swanlab_run_name,
                 mode=strategy.args.swanlab_mode,
-                config=strategy.args.__dict__,
+                config={"Framework": "OpenRLHF"},
                 logdir=strategy.args.swanlab_logdir,
             )
+            swanlab.config.update(strategy.args.__dict__)
 
     def fit(self, args, consumed_samples=0, num_update_steps_per_epoch=None):
         # get eval and save steps
