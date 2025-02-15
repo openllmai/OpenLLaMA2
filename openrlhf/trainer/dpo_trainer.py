@@ -104,7 +104,7 @@ class DPOTrainer(ABC):
             import swanlab
 
             self._swanlab = swanlab
-            if not os.environ.get("SWANLAB_API_KEY"):
+            if not os.environ.get("SWANLAB_API_KEY") and strategy.args.swanlab_mode in ["cloud", None]:
                 swanlab.login(api_key=strategy.args.use_swanlab)     
             swanlab.init(
                 project=strategy.args.swanlab_project,
