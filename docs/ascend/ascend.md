@@ -64,24 +64,24 @@ ray start --head --node-ip-address 0.0.0.0
 
 ### 进展
 
-| 算法                   | 进展                                                         | 与GPU误差 | 详细结果                                                     |
-| ---------------------- | ------------------------------------------------------------ | --------- | ------------------------------------------------------------ |
-| SFT                    | 已支持                                                       | 0.19%     | [测试结果](https://github.com/OpenRLHF/OpenRLHF/pull/605#issuecomment-2567488539) |
-| DPO                    | 功能正常，已有初步验证结果，具体见[测试结果](https://github.com/OpenRLHF/OpenRLHF/pull/605#issuecomment-2567488539)，当前基于默认配置测试中 | 1.81%     | [测试结果](https://github.com/OpenRLHF/OpenRLHF/pull/605#issuecomment-2567488539) |
-| IPO                    | 即将开展                                                     |           |                                                              |
-| cDPO                   | 即将开展                                                     |           |                                                              |
-| KTO                    | 已支持                                                       | 0.37%     | [测试结果](https://github.com/OpenRLHF/OpenRLHF/pull/605#issuecomment-2642104300) |
-| RM                     | 功能正常，已有初步验证结果，具体见[测试结果](https://github.com/OpenRLHF/OpenRLHF/pull/605#issuecomment-2567488539)，当前基于默认配置测试中 | 1.47%     | [测试结果](https://github.com/OpenRLHF/OpenRLHF/pull/605#issuecomment-2567488539) |
-| PRM                    | 已支持                                                       | 1.61%     | [测试结果](https://github.com/OpenRLHF/OpenRLHF/pull/605#issuecomment-2642104300) |
-| Iterative DPO          | 即将开展                                                     |           |                                                              |
-| PPO                    | 测试中                                                       |           |                                                              |
-| REINFORCE++            | 基于 `train_reinforce_llama_ray.sh` 功能打通，精度测试中     |           |                                                              |
-| RLOO                   | 即将开展                                                     |           |                                                              |
-| REINFORCE Baseline     | 即将开展                                                     |           |                                                              |
-| Rejection  Sampling    | 即将开展                                                     |           |                                                              |
-| Knowledge Distillation | 即将开展                                                     |           |                                                              |
-| Conditional SFT        | 即将开展                                                     |           |                                                              |
-| Continue Pretrain      | 即将开展                                                     |           |                                                              |
+| 算法                   | 进展                                                                                                         | 与GPU误差 | 详细结果                                                     |
+| ---------------------- |------------------------------------------------------------------------------------------------------------|--------| ------------------------------------------------------------ |
+| SFT                    | 已支持                                                                                                        | 0.19%  | [测试结果](https://github.com/OpenRLHF/OpenRLHF/pull/605#issuecomment-2567488539) |
+| DPO                    | 功能正常，已有初步验证结果，具体见[测试结果](https://github.com/OpenRLHF/OpenRLHF/pull/605#issuecomment-2567488539)，当前基于默认配置测试中 | 1.81%  | [测试结果](https://github.com/OpenRLHF/OpenRLHF/pull/605#issuecomment-2567488539) |
+| IPO                    | 即将开展                                                                                                       |        |                                                              |
+| cDPO                   | 即将开展                                                                                                       |        |                                                              |
+| KTO                    | 已支持                                                                                                        | 0.37%  | [测试结果](https://github.com/OpenRLHF/OpenRLHF/pull/605#issuecomment-2642104300) |
+| RM                     | 已支持                                                                                                        | 0.85%  | [测试结果](https://github.com/OpenRLHF/OpenRLHF/pull/605#issuecomment-2642104300) |
+| PRM                    | 已支持                                                                                                        | 1.61%  | [测试结果](https://github.com/OpenRLHF/OpenRLHF/pull/605#issuecomment-2642104300) |
+| Iterative DPO          | 即将开展                                                                                                       |        |                                                              |
+| PPO                    | 测试中                                                                                                        |        |                                                              |
+| REINFORCE++            | 基于 `train_reinforce_llama_ray.sh` 功能打通，精度测试中                                                               |        |                                                              |
+| RLOO                   | 即将开展                                                                                                       |        |                                                              |
+| REINFORCE Baseline     | 即将开展                                                                                                       |        |                                                              |
+| Rejection  Sampling    | 即将开展                                                                                                       |        |                                                              |
+| Knowledge Distillation | 即将开展                                                                                                       |        |                                                              |
+| Conditional SFT        | 即将开展                                                                                                       |        |                                                              |
+| Continue Pretrain      | 即将开展                                                                                                       |        |                                                              |
 
 > 补充说明：
 >
